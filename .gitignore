@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+drowsiness_env/
+env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints
+*.egg-info
+
+# Data and models (adjust if you actually want to version small datasets)
+dataset/
+models/
+*.h5
+*.pth

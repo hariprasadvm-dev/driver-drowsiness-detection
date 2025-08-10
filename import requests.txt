@@ -1,0 +1,49 @@
+import requests
+from bs4 import BeautifulSoup
+
+# CPE login details
+url = "http://192.168.1.1"
+login_url = f"{url}/login.cgi"
+username = "admin"
+password = "E8Q3AMNY"
+
+session = requests.Session()
+
+payload = {
+    "Username": username,
+    "Password": password,
+    "Login": "Login"
+}
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+try:
+    # Attempting to login
+    response = session.post(login_url, data=payload, headers=headers)
+    response.raise_for_status()
+    
+    # Check if login was successful
+    if "Logout" not in response.text:
+        print("Login failed. Please check the credentials or the CPE configuration.")
+    else:
+        print("Login successful.")
+        
+        # Access the landing page
+        landing_page = session.get(url, headers=headers)
+        landing_page.raise_for_status()
+        
+        # Parse the HTML to extract firmware version
+        soup = BeautifulSoup(landing_page.text, 'html.parser')
+        
+        # Assuming the firmware version is displayed with a unique ID or class name.
+        firmware_info = soup.find(text=lambda t: "Firmware Version" in t)
+        
+        if firmware_info:
+            print(f"Firmware Version: {firmware_info.parent.text.strip()}")
+        else:
+            print("Firmware version not found on the landing page.")
+
+except requests.RequestException as e:
+    print(f"An error occurred: {e}")
